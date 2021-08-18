@@ -25,29 +25,44 @@ const puppeteer = require("puppeteer");
   //   '[title="Chat"]'
   // );
   // Google chat hackery
-  await page.waitForNavigation({
-    waitUntil: "networkidle2"
-  });
   // Hack to wait for chat to finish booting
   await page.waitForSelector("[role='main']", {
     visible: true,
     timeout: 0
   });
+  /*await page.waitForNavigation({
+    waitUntil: "networkidle2",
+    timeout: 0
+  });*/
+  await page.waitForTimeout(2000);
   await page.bringToFront();
-  await page.keyboard.down("Meta");
+  await page.keyboard.down("Control");
   await page.keyboard.press("KeyI");
+  await page.keyboard.up("Control");
 
   console.log("Typed");
-  await page.waitForSelector('[aria-label="Enter room name."]');
-  await page.type('[aria-label="Enter room name."]', "INCIDENTROOM-01");
+	//await page.keyboard.type('INCIDENTROOM-01');
+  await page.waitForTimeout(2000);
+  await page.waitForSelector("input");
+  await page.type("input", "INCIDENTROOM-01");
+
+  await page.keyboard.press("Tab");
+  await page.keyboard.type("Everyone");
+  await page.waitForTimeout(2000);
+  await page.keyboard.press('Enter')
+
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Space");
+
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Enter");
+
+  //await page.type("input:nth-child(2) ", "Everyone");
 
   // await page.waitForSelector(
   //   'aria-label="Enter name or email of person or group"'
   // );
-  await page.type(
-    'aria-label="Enter name or email of person or group"',
-    "Everyone"
-  );
   // await page.waitForTimeout(10000);
   // await page.keyboard.press("h", { delay: 50 });
   // await page.keyboard.press("r", { delay: 50 });
