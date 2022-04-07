@@ -1,5 +1,7 @@
 const puppeteer = require("puppeteer");
 const isDev = false;
+const isMac = process.platform === 'darwin';
+const metaKey = isMac ? 'Meta' : 'Control';
 
 (async () => {
   const browser = await puppeteer.launch({
@@ -65,9 +67,9 @@ const createRoom = async (page, roomName) => {
   // Refocus on chat
   await page.mouse.click(0, 0);
 
-  await page.keyboard.down("Control");
+  await page.keyboard.down(metaKey);
   await page.keyboard.press("KeyI");
-  await page.keyboard.up("Control");
+  await page.keyboard.up(metaKey);
 
   // Type a room name
   await page.waitForTimeout(2000);
@@ -94,9 +96,9 @@ const addRT = async (page) => {
   await page.waitForTimeout(4000);
   // Add RespectTables
   // Open room menu
-  await page.keyboard.down("Control");
+  await page.keyboard.down(metaKey);
   await page.keyboard.press("KeyG");
-  await page.keyboard.up("Control");
+  await page.keyboard.up(metaKey);
   await page.waitForTimeout(2000);
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Enter");
@@ -117,9 +119,9 @@ const addRT = async (page) => {
 const leaveRoom = async (page) => {
   await page.waitForTimeout(2000);
   // Leave the room
-  await page.keyboard.down("Control");
+  await page.keyboard.down(metaKey);
   await page.keyboard.press("KeyG");
-  await page.keyboard.up("Control");
+  await page.keyboard.up(metaKey);
   await page.waitForTimeout(2000);
   for (let i = 0; i <= 5; i++) {
     await page.keyboard.press("ArrowDown");
