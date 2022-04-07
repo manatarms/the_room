@@ -32,37 +32,24 @@ const metaKey = isMac ? 'Meta' : 'Control';
   });
 
   // Chat is constantly doing things
-  // Wait for 3 seconds (guesstimate) to finish
-  await page.waitForTimeout(3000);
+  // Wait for 6 seconds (guesstimate) to finish
+  await page.waitForTimeout(6000);
   await page.bringToFront();
 
-  // We have to do a bunch of stuff manually
-  // to trigger the PWA popup, so lets do that first
-  await createRoom(page, "INCIDENTROOM-0");
-
-  // Close the silly PWA pop up
-  console.log("Don't touch anything, I'm waiting for a chat notification...");
-  await page.waitForSelector(".promo-popup-header", { timeout: 0 });
-  await page.keyboard.press("Tab");
-  await page.keyboard.press("Tab");
-  await page.keyboard.press("Enter");
-
-  await addRT(page);
-  await leaveRoom(page);
-
   // Create a room
-  for (let i = 1; i < process.env.COUNT; i++) {
-    await createRoom(page, `INCIDENTROOM-${i}`);
+  for (let i = 0; i < process.env.COUNT; i++) {
+    await createRoom(page, `INCIDENTROOM-${i} Please Rename This Room`);
     await addRT(page);
     await leaveRoom(page);
     console.log(`Made INCIDENTROOM-${i}`);
   }
 
   console.log("Oh hi mark! I made some rooms");
+  browser.close()
 })();
 
 const createRoom = async (page, roomName) => {
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(1000);
 
   // Refocus on chat
   await page.mouse.click(0, 0);
@@ -72,15 +59,27 @@ const createRoom = async (page, roomName) => {
   await page.keyboard.up(metaKey);
 
   // Type a room name
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(1000);
   await page.waitForSelector("input");
   await page.type("input", roomName);
 
   // Add Everyone
   await page.keyboard.press("Tab");
   await page.keyboard.type("Everyone");
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(1000);
   await page.keyboard.press("Enter");
+
+  // Set space access to 'All of Cloudflare'
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(1000);
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+
+  // tab out of setting space access depth
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
 
   // Threaded replies
   await page.keyboard.press("Tab");
@@ -90,30 +89,34 @@ const createRoom = async (page, roomName) => {
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
   await page.keyboard.press("Enter");
+
+  // Wait for room modal to close
+  await page.waitForTimeout(1000);
 };
 
 const addRT = async (page) => {
-  await page.waitForTimeout(4000);
+  await page.waitForTimeout(3000);
   // Add RespectTables
   // Open room menu
   await page.keyboard.down(metaKey);
   await page.keyboard.press("KeyG");
   await page.keyboard.up(metaKey);
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(1000);
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Enter");
   // Add RT
   await page.waitForSelector("input");
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(1000);
   await page.type("input", "RespectTables");
   // Wait for list to load
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(1000);
   await page.keyboard.press("ArrowDown");
+  await page.waitForTimeout(100);
   await page.keyboard.press("Enter");
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
   await page.keyboard.press("Enter");
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(1000);
 };
 
 const leaveRoom = async (page) => {
@@ -122,12 +125,12 @@ const leaveRoom = async (page) => {
   await page.keyboard.down(metaKey);
   await page.keyboard.press("KeyG");
   await page.keyboard.up(metaKey);
-  await page.waitForTimeout(2000);
-  for (let i = 0; i <= 5; i++) {
+  await page.waitForTimeout(1000);
+  for (let i = 0; i <= 7; i++) {
     await page.keyboard.press("ArrowDown");
   }
   await page.keyboard.press("Enter");
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(1000);
   await page.keyboard.press("Enter");
 };
 
