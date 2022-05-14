@@ -96,6 +96,10 @@ const createRoom = async (page, roomName) => {
 
 const addRT = async (page) => {
   await page.waitForTimeout(3000);
+  
+  // Refocus on chat
+  await page.mouse.click(0, 0);
+  
   // Add RespectTables
   // Open room menu
   await page.keyboard.down(metaKey);
