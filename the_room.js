@@ -3,6 +3,9 @@ const isDev = false;
 const isMac = process.platform === 'darwin';
 const metaKey = isMac ? 'Meta' : 'Control';
 
+const startIndex = 1;
+const spaceIsTopicBased = true;
+
 (async () => {
   const browser = await puppeteer.launch({
     headless: false,
@@ -38,10 +41,10 @@ const metaKey = isMac ? 'Meta' : 'Control';
 
   // Create a room
   for (let i = 0; i < process.env.COUNT; i++) {
-    await createRoom(page, `INCIDENTROOM-${i} Please Rename This Room`);
+    await createRoom(page, `INCIDENTROOM-${i + startIndex} Please Rename This Room`);
     await addRT(page);
     await leaveRoom(page);
-    console.log(`Made INCIDENTROOM-${i}`);
+    console.log(`Made INCIDENTROOM-${i + startIndex}`);
   }
 
   console.log("Oh hi mark! I made some rooms");
@@ -65,6 +68,7 @@ const createRoom = async (page, roomName) => {
 
   // Add Everyone
   await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
   await page.keyboard.type("Everyone");
   await page.waitForTimeout(1000);
   await page.keyboard.press("Enter");
@@ -79,11 +83,17 @@ const createRoom = async (page, roomName) => {
   // tab out of setting space access depth
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
-  await page.keyboard.press("Tab");
 
-  // Threaded replies
-  await page.keyboard.press("Tab");
-  await page.keyboard.press("Space");
+  // if creating a topic based room
+  if(spaceIsTopicBased) {
+    // advanced options
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Tab");
+
+    // Organize by conversation topic
+    await page.keyboard.press("Space");
+    await page.keyboard.press("Tab");
+  }
 
   // Click the create button
   await page.keyboard.press("Tab");
@@ -97,25 +107,18 @@ const createRoom = async (page, roomName) => {
 const addRT = async (page) => {
   await page.waitForTimeout(3000);
   
-  // Refocus on chat
-  await page.mouse.click(0, 0);
+  // Refocus on chat space
+  await page.mouse.click(900, 400);
   
   // Add RespectTables
-  // Open room menu
-  await page.keyboard.down(metaKey);
-  await page.keyboard.press("KeyG");
-  await page.keyboard.up(metaKey);
-  await page.waitForTimeout(1000);
-  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Tab");
   await page.keyboard.press("Enter");
-  // Add RT
-  await page.waitForSelector("input");
   await page.waitForTimeout(1000);
+  await page.waitForSelector("input");
   await page.type("input", "RespectTables");
   // Wait for list to load
   await page.waitForTimeout(1000);
   await page.keyboard.press("ArrowDown");
-  await page.waitForTimeout(100);
   await page.keyboard.press("Enter");
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
@@ -125,6 +128,10 @@ const addRT = async (page) => {
 
 const leaveRoom = async (page) => {
   await page.waitForTimeout(2000);
+  
+  // Refocus on top left of app window
+  await page.mouse.click(0, 0);
+  
   // Leave the room
   await page.keyboard.down(metaKey);
   await page.keyboard.press("KeyG");
@@ -137,4 +144,3 @@ const leaveRoom = async (page) => {
   await page.waitForTimeout(1000);
   await page.keyboard.press("Enter");
 };
-
