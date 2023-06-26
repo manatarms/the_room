@@ -1,10 +1,9 @@
 const puppeteer = require("puppeteer");
-const isDev = false;
+const isDev = true;
 const isMac = process.platform === 'darwin';
 const metaKey = isMac ? 'Meta' : 'Control';
 
-const startIndex = 1;
-const spaceIsTopicBased = true;
+const startIndex = 0;
 
 (async () => {
   const browser = await puppeteer.launch({
@@ -84,17 +83,6 @@ const createRoom = async (page, roomName) => {
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
 
-  // if creating a topic based room
-  if(spaceIsTopicBased) {
-    // advanced options
-    await page.keyboard.press("Enter");
-    await page.keyboard.press("Tab");
-
-    // Organize by conversation topic
-    await page.keyboard.press("Space");
-    await page.keyboard.press("Tab");
-  }
-
   // Click the create button
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
@@ -137,7 +125,7 @@ const leaveRoom = async (page) => {
   await page.keyboard.press("KeyG");
   await page.keyboard.up(metaKey);
   await page.waitForTimeout(1000);
-  for (let i = 0; i <= 7; i++) {
+  for (let i = 0; i <= 8; i++) {
     await page.keyboard.press("ArrowDown");
   }
   await page.keyboard.press("Enter");
